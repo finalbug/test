@@ -1,0 +1,61 @@
+CentOS搭建LAMP
+1、配置防火墙
+	打开防火墙配置文件
+		vi /etc/sysconfig/iptables
+		
+		--------------------------
+		-A INPUT -m state –state NEW -m tcp -p tcp –dport 22 -j ACCEPT
+		-A INPUT -m state –state NEW -m tcp -p tcp –dport 80 -j ACCEPT #允许80端口通过防火墙
+		-A INPUT -m state –state NEW -m tcp -p tcp –dport 3306 -j ACCEPT #允许3306端口通过防火墙
+		--------------------------
+		设置80、3306端口可以通过防火墙
+		
+	重启防火墙
+		/etc/init.d/iptables restart #最后重启防火墙使配置生效或者是【service iptables restart 】
+2、安装Apache 
+	卸载自带httpd: yum -y remove httpd
+	安装
+		yum -y install httpd httpd-devel 
+	安装完成后，启动apache ,执行命令：
+		service httpd start  #或者是【/etc/init.d/httpd start】
+	设为开机启动，执行命令:
+		chkconfig httpd on
+3.安装mysql 
+	卸载自带mysql
+		yum -y remove mysql mysql-server mysql-libs compat-mysql51
+	安装
+		yum  -y install mysql mysql-server mysql-devel 
+	停止mysql，执行命令：
+		service mysqld stop  #或者是【/etc/init.d/mysql stop】
+		mysqld_safe --user=mysql --skip-grant-tables --skip-networking &
+	进入mysql
+	    mysql -u root mysql
+	mysql的使用 
+		----------------------------------	
+		mysql>USE mysql; 
+		mysql> UPDATE user SET Password=PASSWORD('123') where USER='root';   #修改新密码为123
+		mysql> FLUSH PRIVILEGES;
+		mysql> quit;
+		----------------------------------
+	重启mysql
+		service mysqld restart  #或者是【/etc/init.d/mysql restart】
+	再次重设mysql的密码
+		mysql -uroot -p
+		Enter password: <输入新设的密码newpassword>
+4、安装php 
+		yum -y remove php php-mysql php-common php-gd php-mbstring php-mcrypt php-devel php-xml 
+		yum -y install php php-mysql php-common php-gd php-mbstring php-mcrypt php-devel php-xml 
+	重启http服务
+		service httpd start  #或者是【/etc/init.d/httpd start】
+5、测试
+		vi /var/www/html/test.php
+	写入内容
+		-------------------------
+		<?php 
+		phpinfo(); 
+		?> 
+		-------------------------
+	重启http服务
+		/etc/init.d/httpd restart
+	打开网址
+		http://192.168.216.130/test.php
