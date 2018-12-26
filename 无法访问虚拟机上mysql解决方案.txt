@@ -1,0 +1,11 @@
+
+先说说这个错误，其实就是我们的MySQL不允许远程登录，所以远程登录失败了，解决方法如下：
+# /sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
+# /etc/rc.d/init.d/iptables save
+# /etc/init.d/iptables restart
+在装有MySQL的机器上登录MySQL mysql -u root -p密码
+# use mysql;
+# update user set host = '%' where user = 'root';这一句执行完可能会报错，不用管它。
+# FLUSH PRIVILEGES;
+
+
